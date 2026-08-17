@@ -1,4 +1,4 @@
-# Fill-the-coffee-mini-game-widget
+# tastyle-widget-minigame
 Fill the coffee mini game widget you can use it for neocities or nekoweb
 
 just place 
