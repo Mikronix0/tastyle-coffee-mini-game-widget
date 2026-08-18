@@ -1,10 +1,21 @@
 // made by Mikronix0(Miko)
-//Hellooo and thanks for the using my widget I write everything you need :p
 //https://hellacafe.nekoweb.org/ <-- my site you can look if you want to 
-
+//Hellooo and thanks for the using my widget I write everything you need :p
 
 (function () {
-    // widget container
+    const currentScript = document.currentScript;
+    let element = currentScript ? currentScript.parentElement : null;
+
+    let settings = {};
+    if (currentScript && currentScript.dataset && currentScript.dataset.settings) {
+        try {
+            settings = JSON.parse(decodeURIComponent(currentScript.dataset.settings));
+        } catch (e) {
+            console.warn('WidgetStar settings parse error:', e);
+        }
+    }
+
+    // cantainer
     const container = document.createElement('div');
     container.id = 'coffee-widget';
     
@@ -83,7 +94,7 @@
             background: #ff9ebb;
         }
 
-        /* --- footer --- */
+        /* --- footer for the mini game --- */
         #coffee-widget .coffee-footer {
             background: transparent;
             margin-top: 6px;
@@ -95,24 +106,23 @@
             cursor: default;
             text-transform: uppercase;
             white-space: nowrap;
-            text-shadow: none !important; 
+            text-shadow: none !important;
             filter: none !important;
         }
 
         #coffee-widget .coffee-footer a {
-            color: #7d00dc;
+            color: #ff66b2;
             text-decoration: none;
-            text-shadow: none !important; /* Link gölgeleri engellendi */
+            text-shadow: none !important;
             filter: none !important;
         }
 
         #coffee-widget .coffee-footer a:hover {
             text-decoration: underline;
-            color: #9361ff;
+            color: #ff3399;
         }
     `;
 
-    // widget html structure
     container.innerHTML = `
         <div class="game-box">
             <canvas id="gameCanvas" width="300" height="390"></canvas>
@@ -123,26 +133,29 @@
             </div>
         </div>
         <div class="coffee-footer">
-            MADE BY <a href="https://hellacafe.nekoweb.org/" target="_blank">MIKO</a> ᓚᘏᗢ
-            </div>
+            MADE BY <a href="https://hellacafe.nekoweb.org/" target="_blank">MIKO</a> &lt;3
+        </div>
     `;
 
     document.head.appendChild(style);
 
-    const target = document.getElementById('coffee-game-container');
-    if (target) {
-        target.appendChild(container);
-    } else if (document.currentScript && document.currentScript.parentNode) {
-        document.currentScript.parentNode.insertBefore(container, document.currentScript);
+    
+    const customTarget = document.getElementById('coffee-game-container');
+    if (element) {
+        element.appendChild(container); 
+    } else if (customTarget) {
+        customTarget.appendChild(container); 
+    } else if (currentScript && currentScript.parentNode) {
+        currentScript.parentNode.insertBefore(container, currentScript);
     } else {
         document.body.appendChild(container);
     }
 
     // variables and basic definitions
-    const canvas = document.getElementById('gameCanvas');
+    const canvas = container.querySelector('#gameCanvas');
     const ctx = canvas.getContext('2d');
-    const overlay = document.getElementById('game-ui-overlay');
-    const btn = document.getElementById('game-ui-btn');
+    const overlay = container.querySelector('#game-ui-overlay');
+    const btn = container.querySelector('#game-ui-btn');
 
     let level = 1;
     const maxLevels = 3;
@@ -297,9 +310,6 @@
         ctx.beginPath();
         ctx.arc(16, 25, 8, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillStyle = "#ff7b9c";
-        ctx.font = "10px Verdana, sans-serif";
-        ctx.fillText("", 12, 28);
 
         ctx.fillStyle = isPouring && !isGameOver && !isWon ? "#ff4d6d" : "#ffb3c6";
         ctx.beginPath();
@@ -361,7 +371,7 @@
             ctx.fillRect(4, cup.height - 4 - currentFillHeight, cup.width - 8, 4);
         }
 
-        // the face on the cup :p
+        // the face on the cup
         ctx.fillStyle = "rgba(255, 123, 156, 0.6)";
         ctx.beginPath();
         ctx.arc(10, 22, 4, 0, Math.PI * 2);
@@ -396,8 +406,8 @@
 
     // show ui overlay
     function showUI(title, msg, btnText) {
-        document.getElementById('game-ui-title').innerText = title;
-        document.getElementById('game-ui-msg').innerText = msg;
+        container.querySelector('#game-ui-title').innerText = title;
+        container.querySelector('#game-ui-msg').innerText = msg;
         btn.innerText = btnText;
         overlay.classList.remove('hidden');
     }
@@ -410,6 +420,10 @@
             requestAnimationFrame(animate);
         }
     }
+
+    draw();
+    showUI("TASTYLE COFFEE", "Ready to make some coffee?", "Start Game");
+})();
 
     draw();
     showUI("tastyle coffee", "Ready to make some coffee?", "Start Game");
